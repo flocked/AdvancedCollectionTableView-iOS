@@ -464,10 +464,10 @@ class TableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> : U
          
          ```swift
          // Allow every item to be reordered
-         dataSource.reorderingHandlers.canDelete = { elements in return true }
+         dataSource.reorderingHandlers.canReorder = { item in return true }
 
          // Option 1: Update the backing store from a CollectionDifference
-         dataSource.reorderingHandlers.didDelete = { [weak self] items, transaction in
+         dataSource.reorderingHandlers.didReorder = { [weak self] transaction, itemIdentifier in
              guard let self = self else { return }
              
              if let updatedBackingStore = self.backingStore.applying(transaction.difference) {
@@ -476,7 +476,7 @@ class TableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> : U
          }
 
          // Option 2: Update the backing store from the final items
-         dataSource.reorderingHandlers.didReorder = { [weak self] items, transaction in
+         dataSource.reorderingHandlers.didReorder = { [weak self] transaction, itemIdentifier in
              guard let self = self else { return }
              
              self.backingStore = transaction.finalSnapshot.itemIdentifiers
