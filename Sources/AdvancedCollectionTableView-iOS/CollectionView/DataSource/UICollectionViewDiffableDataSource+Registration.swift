@@ -56,5 +56,6 @@ public extension UICollectionViewDiffableDataSource {
                 }
             }
         }
+        updateEmptyView()
     }
 }

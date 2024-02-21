@@ -65,26 +65,82 @@ extension UICollectionViewDiffableDataSource {
     }
     #endif
     
-    /*
-    /// The view that is displayed when the datasource doesn't contain any items.
-    public var emptyCollectionView: UIView? {
-        get { getAssociatedValue(key: "emptyCollectionView", object: self, initialValue: nil) }
+    /**
+     The view that is displayed when the datasource doesn't contain any items.
+     
+     When using this property, ``emptyContentConfiguration`` is set to `nil`.
+     
+     - Note: The empty view is only used, when you apply your snapshots using ``UIKit/UICollectionViewDiffableDataSource/apply(_:_:completion:)``.
+     \
+     \
+     You have to provide a snapshot and an apply option (either `.animated`, `nonAnimated` or `usingReloadedData`). For example:
+     \
+     \
+     ```dataSource.apply(snapshot, .animated)```
+     */
+    public var emptyView: UIView? {
+        get { getAssociatedValue(key: "emptyView", object: self, initialValue: nil) }
         set {
-            guard emptyCollectionView != newValue else { return }
-            set(associatedValue: newValue, key: "emptyCollectionView", object: self)
-            updateEmptyCollectionView()
+            guard emptyView != newValue else { return }
+            if newValue != nil {
+                emptyContentConfiguration = nil
+            } else {
+                emptyView?.removeFromSuperview()
+            }
+            set(associatedValue: newValue, key: "emptyView", object: self)
+            updateEmptyView()
         }
     }
     
-    func updateEmptyCollectionView() {
-        let snapshot = snapshot()
-        if !snapshot.itemIdentifiers.isEmpty && !snapshot.sectionIdentifiers.isEmpty {
-            emptyCollectionView?.removeFromSuperview()
-        } else if let emptyCollectionView = self.emptyCollectionView {
-            collectionView?.addSubview(withConstraint: emptyCollectionView)
+    /**
+     The content configuration that content view is displayed when the datasource doesn't contain any items.
+     
+     When using this property, ``emptyView`` is set to `nil`.
+     
+     - Note: The empty content configuration is only used, when you apply your snapshots using ``UIKit/UICollectionViewDiffableDataSource/apply(_:_:completion:)``.
+     \
+     \
+     You have to provide a snapshot and an apply option (either `.animated`, `nonAnimated` or `usingReloadedData`). For example:
+     \
+     \
+     ```dataSource.apply(snapshot, .animated)```
+     */
+    public var emptyContentConfiguration: UIContentConfiguration? {
+        get { getAssociatedValue(key: "emptyContentConfiguration", object: self, initialValue: nil) }
+        set {
+            if let configuration = newValue {
+                emptyView?.removeFromSuperview()
+                emptyView = nil
+                if let emptyContentView = self.emptyContentView {
+                    emptyContentView.contentConfiguration = configuration
+                } else {
+                    emptyContentView = .init(configuration: configuration)
+                }
+            } else {
+                emptyContentView?.removeFromSuperview()
+                emptyContentView = nil
+            }
+            set(associatedValue: newValue, key: "emptyContentConfiguration", object: self)
+            updateEmptyView()
         }
     }
-    */
+    
+    var emptyContentView: ContentConfigurationView? {
+        get { getAssociatedValue(key: "emptyContentView", object: self, initialValue: nil) }
+        set { set(associatedValue: newValue, key: "emptyContentView", object: self) }
+    }
+    
+    func updateEmptyView() {
+        let snapshot = snapshot()
+        if !snapshot.itemIdentifiers.isEmpty && !snapshot.sectionIdentifiers.isEmpty {
+            emptyView?.removeFromSuperview()
+            emptyContentView?.removeFromSuperview()
+        } else if let emptyView = self.emptyView, emptyView.superview != collectionView {
+            collectionView?.addSubview(withConstraint: emptyView)
+        } else if let emptyContentView = self.emptyContentView, emptyContentView.superview != collectionView {
+            collectionView?.addSubview(withConstraint: emptyContentView)
+        }
+    }
     
     var delegate: Delegate? {
         get { getAssociatedValue(key: "delegate", object: self, initialValue: nil) }

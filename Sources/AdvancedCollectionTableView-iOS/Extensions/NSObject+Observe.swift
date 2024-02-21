@@ -13,17 +13,6 @@ extension NSObjectProtocol where Self: NSObject {
     /**
      Observes changes for a property identified by the given key path.
      
-     Example usage:
-     
-     ```swift
-     let textField = NSTextField()
-     
-     let stringValueObservation = textField.observeChanges(for: \.stringValue) {
-     oldValue, newValue in
-     // handle changed value
-     }
-     ```
-     
      - Parameters:
         - keyPath: The key path of the property to observe.
         - sendInitalValue: A Boolean value indicating whether the handler should get called with the inital value of the observed property.
@@ -42,17 +31,6 @@ extension NSObjectProtocol where Self: NSObject {
     
     /**
      Observes changes for a property identified by the given key path.
-     
-     Example usage:
-     
-     ```swift
-     let textField = NSTextField()
-     
-     let stringValueObservation = textField.observeChanges(for: \.stringValue, uniqueValues: true) {
-     oldValue, newValue in
-     // handle changed value
-     }
-     ```
      
      - Parameters:
         -  keyPath: The key path of the property to observe.
@@ -78,30 +56,4 @@ extension NSObjectProtocol where Self: NSObject {
             }
         }
     }
-    
-    /**
-     Observes the deinitialization of the object and calls the specified handler.
-     
-     - Parameter handler: A closure that will be called when the object deinitializas.
-     */
-    func observeDeinit(_ handler: @escaping () -> ()) {
-        deinitCallback.callbacks.append(handler)
-    }
-    
-    /// Removes all deinitialization observers.
-    func removeAllDeinitObservers() {
-        deinitCallback.callbacks.removeAll()
-    }
-    
-    fileprivate var deinitCallback: DeinitCallback {
-        get { getAssociatedValue(key: "deinitCallback", object: self, initialValue: DeinitCallback()) }
-    }
-}
-
-@objc fileprivate class DeinitCallback: NSObject {
-  var callbacks: [() -> ()] = []
-
-  deinit {
-    callbacks.forEach({ $0() })
-  }
 }

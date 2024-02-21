@@ -44,10 +44,10 @@ tableViewDataSource.reorderingHandlers.didReorder = { [weak self] transaction, _
 
 ### Empty datasource view
 
-`emptyCollectionView` and `emptyTableView` displays the provided view when the datasource doesn't contain any items:
+`emptyView` displays the provided view when the datasource doesn't contain any items:
 
 ```swift
-diffableDataSource.emptyTableView = myEmptyView
+diffableDataSource.emptyView = myEmptyView
 ```
 
 Alternatively you can use `emptyContentConfiguration` and provide an `UIContentConfiguration`:

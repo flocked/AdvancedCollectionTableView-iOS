@@ -16,30 +16,9 @@ extension Selector {
         Swizzle.SelectorPair(old: lhs, new: rhs)
     }
 
-    static func <-> (lhs: Selector, rhs: String) -> Swizzle.SelectorPair {
-        Swizzle.SelectorPair(old: lhs, new: Selector(rhs))
-    }
-
     /// Creates a selector pair for swizzleing from the first and second static selector.
     static func <~> (lhs: Selector, rhs: Selector) -> Swizzle.SelectorPair {
         Swizzle.SelectorPair(old: lhs, new: rhs, static: true)
-    }
-
-    /// Creates a selector pair for swizzleing from the first and second static selector.
-    static func <~> (lhs: Selector, rhs: String) -> Swizzle.SelectorPair {
-        Swizzle.SelectorPair(old: lhs, new: Selector(rhs), static: true)
-    }
-}
-
-extension String {
-    /// Creates a selector pair for swizzleing from the first and second selector.
-    static func <-> (lhs: String, rhs: Selector) -> Swizzle.SelectorPair {
-        Swizzle.SelectorPair(old: Selector(lhs), new: rhs)
-    }
-
-    /// Creates a selector pair for swizzleing from the first and second static selector.
-    static func <~> (lhs: String, rhs: Selector) -> Swizzle.SelectorPair {
-        Swizzle.SelectorPair(old: Selector(lhs), new: rhs, static: true)
     }
 }
 
@@ -91,48 +70,10 @@ struct Swizzle {
         try self.init(type, swizzlePairs: [makeSelectorPairs()])
     }
 
-    /**
-     Swizzles selectors of the class with the specified name.
-
-     - Parameters:
-        - className:  The name of the class.
-        - makeSelectorPairs: The swizzle selector pairs.
-
-     - Throws:Throws if swizzling fails.
-     - Returns: A `Swizzle` object for the specified values.
-     */
-    @discardableResult
-    init(_ className: String, @Builder _ makeSelectorPairs: () -> [SelectorPair]) throws {
-        try self.init(className, swizzlePairs: makeSelectorPairs())
-    }
-
-    /**
-     Swizzles selectors of the class with the specified name.
-
-     - Parameters:
-        - className:  The name of the class.
-        - makeSelectorPairs: The swizzle selector pairs.
-
-     - Throws:Throws if swizzling fails.
-     - Returns: A `Swizzle` object for the specified values.
-     */
-    @discardableResult
-    init(_ className: String, @Builder _ makeSelectorPairs: () -> SelectorPair) throws {
-        try self.init(className, swizzlePairs: [makeSelectorPairs()])
-    }
-
     @discardableResult
     init(_ class_: AnyClass, swizzlePairs: [SelectorPair]) throws {
         guard object_isClass(class_) else {
             throw Error.missingClass(String(describing: class_))
-        }
-        try swizzle(type: class_, pairs: swizzlePairs)
-    }
-
-    @discardableResult
-    init(_ className: String, swizzlePairs: [SelectorPair], reset _: Bool = false) throws {
-        guard let class_ = NSClassFromString(className) else {
-            throw Error.missingClass(className)
         }
         try swizzle(type: class_, pairs: swizzlePairs)
     }
