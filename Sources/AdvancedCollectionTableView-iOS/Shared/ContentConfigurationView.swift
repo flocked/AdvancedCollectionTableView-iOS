@@ -7,10 +7,14 @@
 
 import UIKit
 
+/// A view that displays the content view of a `UIContentConfiguration`.
 class ContentConfigurationView: UIView {
+    
+    /// The content view.
     var contentView: (UIView & UIContentView)
 
-    var contentConfiguration: UIContentConfiguration {
+    /// The current content configuration.
+    public var contentConfiguration: UIContentConfiguration {
         didSet {
             updateContentView()
         }
@@ -22,7 +26,8 @@ class ContentConfigurationView: UIView {
         addSubview(withConstraint: contentView)
     }
     
-    init(configuration: UIContentConfiguration) {
+    /// Creates a view with the specified content configuration.
+    public init(configuration: UIContentConfiguration) {
         self.contentConfiguration = configuration
         self.contentView = configuration.makeContentView()
         super.init(frame: .zero)
