@@ -26,7 +26,7 @@ diffableDataSource.displayingHandlers.willDisplay = { itemIdentifier, cell in
 }
 ```
 
-`TableViewDiffableDataSource` provides handlers for reordering of cells/items like the reordering handlers of `UICollectionViewDiffableDataSource` that Apple provides:
+`TableViewDiffableDataSource` provides handlers for reordering cells like the `UICollectionViewDiffableDataSource` reordering handlers that Apple provides:
 
 ```swift
 // Allow every item to be reordered
