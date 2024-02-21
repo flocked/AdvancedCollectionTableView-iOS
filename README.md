@@ -8,7 +8,9 @@ A framework for `UICollectionView` and `UITableView` that provides:
 
 ## UICollectionViewDiffableDataSource & TableViewDiffableDataSource
 
-It provides handlers for selecting, reordering, focusing and editing cells and additional functionality.
+### Handlers
+
+There are handlers for selecting, reordering, focusing and editing cells.
 
 Examples of some of the included handlers:
 
@@ -24,7 +26,7 @@ diffableDataSource.displayingHandlers.willDisplay = { itemIdentifier, cell in
 }
 ```
 
-`TableViewDiffableDataSource` provides handlers for reordering of cells/items like `UICollectionViewDiffableDataSource’s` reordering handlers:
+`TableViewDiffableDataSource` provides handlers for reordering of cells/items like the reordering handlers of `UICollectionViewDiffableDataSource` that Apple provides:
 
 ```swift
 // Allow every item to be reordered
@@ -38,6 +40,21 @@ tableViewDataSource.reorderingHandlers.didReorder = { [weak self] transaction, _
         self.currentItems = updatedCurrentItems
     }
 }
+```
+
+### Empty datasource view
+
+`emptyCollectionView` and `emptyTableView` displays the provided view when the datasource doesn't contain any items:
+
+```swift
+diffableDataSource.emptyTableView = myEmptyView
+```
+
+Alternatively you can use `emptyContentConfiguration` and provide an `UIContentConfiguration`:
+
+```swift
+let loadingConfiguration = UIContentUnavailableConfiguration.loading()
+diffableDataSource.emptyContentConfiguration = loadingConfiguration
 ```
 
 ## UITableView Cell Registration

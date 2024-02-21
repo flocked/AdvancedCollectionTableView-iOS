@@ -36,13 +36,45 @@ class TableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> : U
         }
     }
     
-    /// The view that is displayed when the datasource doesn't contain any items.
-    open var emptyCollectionView: UIView? = nil {
+    /**
+     The view that is displayed when the datasource doesn't contain any items.
+     
+     When using a empty table view, ``emptyContentConfiguration`` is set to `nil`.
+     */
+    open var emptyTableView: UIView? = nil {
         didSet {
-            guard oldValue != emptyCollectionView else { return }
+            guard oldValue != emptyTableView else { return }
+            if emptyTableView != nil {
+                emptyContentConfiguration = nil
+            }
             updateEmptyCollectionView()
         }
     }
+    
+    /**
+     The content configuration that content view is displayed when the datasource doesn't contain any items.
+     
+     When using a content configuration, ``emptyTableView`` is set to `nil`.
+     */
+    open var emptyContentConfiguration: UIContentConfiguration? = nil {
+        didSet {
+            if let configuration = emptyContentConfiguration {
+                emptyTableView?.removeFromSuperview()
+                emptyTableView = nil
+                if let emptyContentView = self.emptyContentView {
+                    emptyContentView.contentConfiguration = configuration
+                } else {
+                    emptyContentView = .init(configuration: configuration)
+                }
+            } else {
+                emptyContentView?.removeFromSuperview()
+                emptyContentView = nil
+            }
+            updateEmptyCollectionView()
+        }
+    }
+    
+    var emptyContentView: ContentConfigurationView?
     
     override func apply(_ snapshot: NSDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
         super.apply(snapshot, animatingDifferences: animatingDifferences, completion: completion)
@@ -58,9 +90,12 @@ class TableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> : U
     func updateEmptyCollectionView() {
         let snapshot = snapshot()
         if !snapshot.itemIdentifiers.isEmpty && !snapshot.sectionIdentifiers.isEmpty {
-            emptyCollectionView?.removeFromSuperview()
-        } else if let emptyCollectionView = self.emptyCollectionView {
-            tableView?.addSubview(withConstraint: emptyCollectionView)
+            emptyTableView?.removeFromSuperview()
+            emptyContentView?.removeFromSuperview()
+        } else if let emptyTableView = self.emptyTableView, emptyTableView.superview != tableView {
+            tableView?.addSubview(withConstraint: emptyTableView)
+        } else if let emptyContentView = self.emptyContentView, emptyContentView.superview != tableView {
+            tableView?.addSubview(withConstraint: emptyContentView)
         }
     }
     
