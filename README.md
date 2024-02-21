@@ -46,7 +46,7 @@ A registration for the table view’s cells similar to `UICollectionView.CellReg
 
 Use a cell registration to register table cell views with your table view and configure each cell for display.
 
-The following example creates a cell registration for cells of type `UITableViewCell`. Each cells textfield displays its item.
+The following example creates a cell registration for cells of type `UITableViewCell` and string items. Each cells textfield displays its item string.
 
 ```swift
 let cellRegistration = UITableView.CellRegistration<UITableViewCell, String> { cell, indexPath, string in
@@ -75,9 +75,11 @@ let dataSource = UITableViewDiffableDataSource(tableView: myTableView, cellRegis
 }
 ```
 
-## UITableView Header/Footer View Registration
+## UITableView Section View Registration
 
-A registration for the table view’s header/footer views.
+A registration for the table view’s header/footer section views.
+
+The following example creates a section view registration for views of type `UITableViewHeaderFooterView` for sections with strings. Each section header views default content configuration text displays its section string.
 
 ```swift
 let sectionViewRegistration = UITableView.SectionViewRegistration<UITableViewHeaderFooterView, String> {
@@ -97,7 +99,7 @@ dataSource.headerViewProvider = { tableView, section in
 }
 ```
 
-You can also ``applyHeaderViewRegistration()`` and `applyFooterViewRegistration()``:
+Alternatively you can also ``applyHeaderViewRegistration()`` and `applyFooterViewRegistration()``:
 
 ```swift
 dataSource.applyHeaderViewRegistration(sectionViewRegistration)
