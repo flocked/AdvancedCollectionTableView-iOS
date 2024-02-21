@@ -47,8 +47,8 @@ class TableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> : U
             oldValue?.removeFromSuperview()
             if emptyView != nil {
                 emptyContentConfiguration = nil
+                updateEmptyView()
             }
-            updateEmptyView()
         }
     }
     
@@ -60,18 +60,17 @@ class TableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> : U
     open var emptyContentConfiguration: UIContentConfiguration? = nil {
         didSet {
             if let configuration = emptyContentConfiguration {
-                emptyView?.removeFromSuperview()
                 emptyView = nil
                 if let emptyContentView = self.emptyContentView {
                     emptyContentView.contentConfiguration = configuration
                 } else {
                     emptyContentView = .init(configuration: configuration)
                 }
+                updateEmptyView()
             } else {
                 emptyContentView?.removeFromSuperview()
                 emptyContentView = nil
             }
-            updateEmptyView()
         }
     }
     

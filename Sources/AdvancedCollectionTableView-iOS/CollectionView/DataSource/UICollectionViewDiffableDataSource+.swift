@@ -70,10 +70,10 @@ extension UICollectionViewDiffableDataSource {
      
      When using this property, ``emptyContentConfiguration`` is set to `nil`.
      
-     - Note: The empty view is only used, when you apply your snapshots using ``UIKit/UICollectionViewDiffableDataSource/apply(_:_:completion:)``.
+     - Important: The empty view is only used, when you apply your snapshots using ``UIKit/UICollectionViewDiffableDataSource/apply(_:_:completion:)``.
      \
      \
-     You have to provide a snapshot and an apply option (either `.animated`, `nonAnimated` or `usingReloadedData`). For example:
+     You have to provide a snapshot and an apply option (either `.animated`, `.nonAnimated` or `.usingReloadedData`). For example:
      \
      \
      ```dataSource.apply(snapshot, .animated)```
@@ -82,13 +82,12 @@ extension UICollectionViewDiffableDataSource {
         get { getAssociatedValue(key: "emptyView", object: self, initialValue: nil) }
         set {
             guard emptyView != newValue else { return }
+            emptyView?.removeFromSuperview()
+            set(associatedValue: newValue, key: "emptyView", object: self)
             if newValue != nil {
                 emptyContentConfiguration = nil
-            } else {
-                emptyView?.removeFromSuperview()
+                updateEmptyView()
             }
-            set(associatedValue: newValue, key: "emptyView", object: self)
-            updateEmptyView()
         }
     }
     
@@ -97,10 +96,10 @@ extension UICollectionViewDiffableDataSource {
      
      When using this property, ``emptyView`` is set to `nil`.
      
-     - Note: The empty content configuration is only used, when you apply your snapshots using ``UIKit/UICollectionViewDiffableDataSource/apply(_:_:completion:)``.
+     - Important: The empty content configuration is only used, when you apply your snapshots using ``UIKit/UICollectionViewDiffableDataSource/apply(_:_:completion:)``.
      \
      \
-     You have to provide a snapshot and an apply option (either `.animated`, `nonAnimated` or `usingReloadedData`). For example:
+     You have to provide a snapshot and an apply option (either `.animated`, `.nonAnimated` or `.usingReloadedData`). For example:
      \
      \
      ```dataSource.apply(snapshot, .animated)```
@@ -108,20 +107,19 @@ extension UICollectionViewDiffableDataSource {
     public var emptyContentConfiguration: UIContentConfiguration? {
         get { getAssociatedValue(key: "emptyContentConfiguration", object: self, initialValue: nil) }
         set {
+            set(associatedValue: newValue, key: "emptyContentConfiguration", object: self)
             if let configuration = newValue {
-                emptyView?.removeFromSuperview()
                 emptyView = nil
                 if let emptyContentView = self.emptyContentView {
                     emptyContentView.contentConfiguration = configuration
                 } else {
                     emptyContentView = .init(configuration: configuration)
                 }
+                updateEmptyView()
             } else {
                 emptyContentView?.removeFromSuperview()
                 emptyContentView = nil
             }
-            set(associatedValue: newValue, key: "emptyContentConfiguration", object: self)
-            updateEmptyView()
         }
     }
     
