@@ -13,12 +13,12 @@ It provides handlers for selecting, reordering, focusing and editing cells and a
 Examples of some of the included handlers:
 
 ```swift
-/// Handler that gets called when the user did select an item.
+// Handler that gets called when the user did select an item.
 diffableDataSource.selectionHandlers.didSelect = { itemIdentifier in
-    // did select an item
+
 }
 
-/// Handler that gets called when an item/cell is about to be shown.
+// Handler that gets called when an item/cell is about to be shown.
 diffableDataSource.displayingHandlers.willDisplay = { itemIdentifier, cell in
 
 }
@@ -31,11 +31,11 @@ diffableDataSource.displayingHandlers.willDisplay = { itemIdentifier, cell in
 tableViewDataSource.reorderingHandlers.canReorder = { item in return true }
 
 // Update the backing store from the did reorder transaction.
-tableViewDataSource.reorderingHandlers.didReorder = { [weak self] transaction, itemIdentifier in
+tableViewDataSource.reorderingHandlers.didReorder = { [weak self] transaction, _ in
     guard let self = self else { return }
              
-    if let updatedBackingStore = self.backingStore.applying(transaction.difference) {
-        self.backingStore = updatedBackingStore
+    if let updatedCurrentItems = self.currentItems.applying(transaction.difference) {
+        self.currentItems = updatedCurrentItems
     }
 }
 ```
