@@ -40,9 +40,9 @@ tableViewDataSource.reorderingHandlers.didReorder = { [weak self] transaction, _
 }
 ```
 
-## UITableView Cell and Header/Footer registration
+## UITableView Cell Registration
 
-A registration for the table view’s cells and header/footer views similar to `UICollectionView.CellRegistration`.
+A registration for the table view’s cells similar to `UICollectionView.CellRegistration`.
 
 Use a cell registration to register table cell views with your table view and configure each cell for display.
 
@@ -59,11 +59,64 @@ let cellRegistration = UITableView.CellRegistration<UITableViewCell, String> { c
 }
 ```
 
-After you create a cell registration, you pass it in to ``UIKit/UITableView/dequeueConfiguredReusableCell(using:for:item:)``, which you call from your data source’s cell provider.
+After you create a cell registration, you pass it in to ``dequeueConfiguredReusableCell(using:for:item:)``, which you call from your data source’s cell provider.
 
 ```swift
 dataSource = UITableViewDiffableDataSource<Section, String>(tableView: tableView) {
     tableView, indexPath, item in
     return tableView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
 }
+```
+
+Alternatively you can use the ``UICollectionViewDiffableDataSource`` and ``UITableViewDiffableDataSource`` initializers:
+
+```swift
+let dataSource = UITableViewDiffableDataSource(tableView: myTableView, cellRegistration: cellRegistration)
+}
+```
+
+## UITableView Header/Footer View Registration
+
+A registration for the table view’s header/footer views.
+
+```swift
+let sectionViewRegistration = UITableView.SectionViewRegistration<UITableViewHeaderFooterView, String> {
+    sectionView, indexPath, string in
+     
+    var configuration = sectionView.defaultContentConfiguration()
+    configuration.text = string
+    sectionView.contentConfiguration = configuration
+}
+```
+     
+After you create a section view registration, you pass it in to ``dequeueConfiguredReusableSectionView(using:section:)``, which you call from your data source’s section header view provider.
+
+```swift
+dataSource.headerViewProvider = { tableView, section in
+    return tableView.dequeueConfiguredReusableSectionView(using: sectionViewRegistration, section: section)
+}
+```
+
+You can also ``applyHeaderViewRegistration()`` and `applyFooterViewRegistration()``:
+
+```swift
+dataSource.applyHeaderViewRegistration(sectionViewRegistration)
+```
+
+## Diffable DataSource Snapshot Apply Options
+
+Options for applying snapshots to a diffable datasource:
+
+```swift
+// Applies the snapshot animated with default animation duration.
+dataSource.apply(mySnapshot, .animated)
+
+// Applies the snapshot animated with the specified animation duration.
+dataSource.apply(mySnapshot, .animated(duration: 2.0))
+
+// Applies the snapshot non animated.
+dataSource.apply(mySnapshot, .withoutAnimation)
+
+// Applies the snapshot using reload data.
+dataSource.apply(mySnapshot, .usingReloadData)
 ```
