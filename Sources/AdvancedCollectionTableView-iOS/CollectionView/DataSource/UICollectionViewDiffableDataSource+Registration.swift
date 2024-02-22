@@ -32,6 +32,10 @@ public extension UICollectionViewDiffableDataSource {
         - completion: An optional closure to be executed when the animations are complete. This closure has no return value and takes no parameters. The system calls this closure from the main queue. The default value is `nil`.
      */
     func apply(_ snapshot: NSDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, _ option: DiffableDataSourceSnapshotApplyOption, completion: (() -> Void)? = nil) {
+        var previousIsEmpty: Bool?
+        if emptyHandler != nil {
+            previousIsEmpty = self.snapshot().isEmpty
+        }
         switch option {
         case .usingReloadData:
             if #available(iOS 15.0, tvOS 15.0, *) {
@@ -56,6 +60,6 @@ public extension UICollectionViewDiffableDataSource {
                 }
             }
         }
-        updateEmptyView()
+        updateEmptyView(snapshot, previousIsEmpty: previousIsEmpty)
     }
 }

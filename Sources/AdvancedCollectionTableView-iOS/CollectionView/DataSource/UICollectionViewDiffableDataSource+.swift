@@ -86,7 +86,7 @@ extension UICollectionViewDiffableDataSource {
             set(associatedValue: newValue, key: "emptyView", object: self)
             if newValue != nil {
                 emptyContentConfiguration = nil
-                updateEmptyView()
+                updateEmptyView(snapshot())
             }
         }
     }
@@ -115,10 +115,25 @@ extension UICollectionViewDiffableDataSource {
                 } else {
                     emptyContentView = .init(configuration: configuration)
                 }
-                updateEmptyView()
+                updateEmptyView(snapshot())
             } else {
                 emptyContentView?.removeFromSuperview()
                 emptyContentView = nil
+            }
+        }
+    }
+    
+    /**
+     The handler that gets called when the data source is switching between an empty and non-empty snapshot or viceversa.
+     
+     You can use this handler e.g. if you want to update your empty view or content configuration.
+     */
+    public var emptyHandler: ((_ isEmpty: Bool)->())? {
+        get { getAssociatedValue(key: "emptyHandler", object: self, initialValue: nil) }
+        set {
+            set(associatedValue: newValue, key: "emptyHandler", object: self)
+            if let emptyHandler = newValue {
+                emptyHandler(snapshot().isEmpty)
             }
         }
     }
@@ -128,15 +143,20 @@ extension UICollectionViewDiffableDataSource {
         set { set(associatedValue: newValue, key: "emptyContentView", object: self) }
     }
     
-    func updateEmptyView() {
-        let snapshot = snapshot()
-        if !snapshot.itemIdentifiers.isEmpty && !snapshot.sectionIdentifiers.isEmpty {
+    func updateEmptyView(_ snapshot: NSDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, previousIsEmpty: Bool? = nil) {
+        if !snapshot.isEmpty {
             emptyView?.removeFromSuperview()
             emptyContentView?.removeFromSuperview()
         } else if let emptyView = self.emptyView, emptyView.superview != collectionView {
             collectionView?.addSubview(withConstraint: emptyView)
         } else if let emptyContentView = self.emptyContentView, emptyContentView.superview != collectionView {
             collectionView?.addSubview(withConstraint: emptyContentView)
+        }
+        if let emptyHandler = self.emptyHandler, let previousIsEmpty = previousIsEmpty {
+            let isEmpty = snapshot.isEmpty
+            if previousIsEmpty != isEmpty {
+                emptyHandler(isEmpty)
+            }
         }
     }
     

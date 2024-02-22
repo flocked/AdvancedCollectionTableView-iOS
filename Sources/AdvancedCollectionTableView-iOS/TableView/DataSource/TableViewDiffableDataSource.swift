@@ -47,7 +47,7 @@ class TableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> : U
             oldValue?.removeFromSuperview()
             if emptyView != nil {
                 emptyContentConfiguration = nil
-                updateEmptyView()
+                updateEmptyView(snapshot())
             }
         }
     }
@@ -66,7 +66,7 @@ class TableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> : U
                 } else {
                     emptyContentView = .init(configuration: configuration)
                 }
-                updateEmptyView()
+                updateEmptyView(snapshot())
             } else {
                 emptyContentView?.removeFromSuperview()
                 emptyContentView = nil
@@ -74,28 +74,54 @@ class TableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> : U
         }
     }
     
+    /**
+     The handler that gets called when the data source is switching between an empty and non-empty snapshot or viceversa.
+     
+     You can use this handler e.g. if you want to update your empty view or content configuration.
+     */
+    open var emptyHandler: ((_ isEmpty: Bool)->())? {
+        didSet {
+            if let emptyHandler = self.emptyHandler {
+                emptyHandler(snapshot().isEmpty)
+            }
+        }
+    }
+    
     var emptyContentView: ContentConfigurationView?
     
     override func apply(_ snapshot: NSDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
+        var previousIsEmpty: Bool?
+        if emptyHandler != nil {
+            previousIsEmpty = self.snapshot().isEmpty
+        }
         super.apply(snapshot, animatingDifferences: animatingDifferences, completion: completion)
-        updateEmptyView()
+        updateEmptyView(snapshot, previousIsEmpty: previousIsEmpty)
     }
     
     @available(iOS 15.0, tvOS 15.0, *)
     override func applySnapshotUsingReloadData(_ snapshot: NSDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, completion: (() -> Void)? = nil) {
+        var previousIsEmpty: Bool?
+        if emptyHandler != nil {
+            previousIsEmpty = self.snapshot().isEmpty
+        }
         super.applySnapshotUsingReloadData(snapshot, completion: completion)
-        updateEmptyView()
+        updateEmptyView(snapshot, previousIsEmpty: previousIsEmpty)
     }
     
-    func updateEmptyView() {
-        let snapshot = snapshot()
-        if !snapshot.itemIdentifiers.isEmpty && !snapshot.sectionIdentifiers.isEmpty {
+    func updateEmptyView(_ snapshot: NSDiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, previousIsEmpty: Bool? = nil) {
+        if !snapshot.isEmpty {
             emptyView?.removeFromSuperview()
             emptyContentView?.removeFromSuperview()
         } else if let emptyView = self.emptyView, emptyView.superview != tableView {
             tableView?.addSubview(withConstraint: emptyView)
         } else if let emptyContentView = self.emptyContentView, emptyContentView.superview != tableView {
             tableView?.addSubview(withConstraint: emptyContentView)
+        }
+        if let emptyHandler = self.emptyHandler, let previousIsEmpty = previousIsEmpty {
+            let isEmpty = snapshot.isEmpty
+            if previousIsEmpty != isEmpty {
+                emptyHandler(isEmpty)
+            }
         }
     }
     
