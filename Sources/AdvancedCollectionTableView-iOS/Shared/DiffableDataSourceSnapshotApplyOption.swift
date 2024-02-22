@@ -12,14 +12,14 @@ public enum DiffableDataSourceSnapshotApplyOption: Hashable, Sendable {
     /**
      The snapshot gets applied animated.
 
-     The data source computes a diff of the previous and new state and applies the new state animated with a default animation duration. Any ongoing item animations are interrupted and the content is reloaded immediately.
+     The data source computes a diff of the previous and new state and applies the updates to the receiver animated with a default animation duration.
      */
     public static var animated: Self { .animated(duration: noAnimationDuration) }
 
     /**
      The snapshot gets applied animiated with the specified animation duration.
-
-     The data source computes a diff of the previous and new state and applies the new state animated with the specified animation duration. Any ongoing item animations are interrupted and the content is reloaded immediately.
+     
+     The data source computes a diff of the previous and new state and applies the updates to the receiver animated with the specified animation duration.
      */
     case animated(duration: TimeInterval)
 
@@ -32,7 +32,7 @@ public enum DiffableDataSourceSnapshotApplyOption: Hashable, Sendable {
     /**
      The snapshot gets applied without any animation.
 
-     The data source computes a diff of the previous and new state and applies the new state non animated. Any ongoing item animations are interrupted and the content is reloaded immediately.
+     The data source computes a diff of the previous and new state and applies the updates to the receiver without any animation.
      */
     case withoutAnimation
 

@@ -7,7 +7,7 @@
 
 import UIKit
 
-/// A view that displays the content view of a `UIContentConfiguration`.
+/// A view that displays the content view of an `UIContentConfiguration`.
 class ContentConfigurationView: UIView {
     
     /// The content view.
