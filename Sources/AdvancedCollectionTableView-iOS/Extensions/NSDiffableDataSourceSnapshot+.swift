@@ -10,6 +10,9 @@ import UIKit
 extension NSDiffableDataSourceSnapshot {
     /// A Boolean value indicating whether the snapshot is empty.
     var isEmpty: Bool {
-        numberOfItems == 0 && numberOfSections == 0
+        if numberOfItems > 0 {
+            return numberOfSections == 0
+        }
+        return true
     }
 }
